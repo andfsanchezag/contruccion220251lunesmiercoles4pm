@@ -5,6 +5,18 @@
 
 package app.domain.services;
 
+import app.domain.models.InvoiceHeader;
+import app.domain.models.Partner;
+import app.domain.models.Person;
+import app.domain.models.User;
+import app.ports.InvoiceHeaderPort;
+import app.ports.PartnerPort;
+import app.ports.PersonPort;
+import app.ports.UserPort;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  *
  * @author ESTUDIANTE
@@ -14,36 +26,37 @@ public class AdminService {
     private PersonPort personPort;
     private UserPort userPort;
     private PartnerPort partnerPort;
+    private InvoiceHeaderPort invoiceHeaderPort;
     
     public void registerPartner(Partner partner)throws Exception{
-        if (personPort.existPerson(partner.getDocument()){
+        if (personPort.existPerson(partner.getDocument())){
             throw new Exception("ya existe una persona con esa cedula");
         }
-        if (userPort.existUserName(partner.getUserName()){
+        if (userPort.existUserName(partner.getUserName())){
             throw new Exception("ya existe ese username registrado");
         }
         partner.setRole("partner");
-        partner.setFounds(50000);
+        partner.setAmount(50000);
         partner.setType("regular");
         personPort.savePerson(partner);
         userPort.saveUser(partner);
         partnerPort.savePartner(partner);
     }
     
-    public list<InvoiceHeader> getInvoiceHeader(Person person)throws Exception{
+    public List<InvoiceHeader> getInvoiceHeader(Person person)throws Exception{
         if(person==null){
             return invoiceHeaderPort.getAllInvoices();
         }
-        person=personPort.findByDocument(person.getDocument);
+        person=personPort.findByDocument(person.getDocument());
         if (person==null){
             throw new Exception("no existe una persona con esa cedula");
         }
-        User user=userPort.findByPersonId(person.getPersonId);
+        User user=userPort.findByPersonId(person.getPersonId());
         if (user==null){
             throw new Exception("no existe un usuario asociado");
         }
-        if(user.getRole().equeals("partner")){
-            Partner partner= partnerPort.findByUserId(user.getUserId);
+        if(user.getRole().equals("partner")){
+            Partner partner= partnerPort.findByUserId(user.getUserId());
             if(partner== null){
                 throw new Exception("error validando socio");
             }
@@ -57,7 +70,7 @@ public class AdminService {
         if(countVip>= 5){
             throw new Exception("no hay cupos para VIP");
         }
-        List<Partner> partners = partnersPort.getByStatusPending();
+        List<Partner> partners = partnerPort.getByStatusPending();
         if(partners.isEmpty()){
          throw new Exception("no socios solicitando promocion para VIP");
         }
@@ -65,7 +78,7 @@ public class AdminService {
             double total = invoiceHeaderPort.getTotalAmountPayed(partner);
             partner.setTotalAmountPayed(total);   
         }
-        List<Partner> partnerSorted = partners.stream().sorted(Comparator.comparing(Partner::getTotalAmountPayed)).reversed().collect(Collectors.toList());
+        List<Partner> partnerSorted = partners.stream().sorted(Comparator.comparing(Partner::getTotalAmountPayed)).collect(Collectors.toList());
         for(int i=0; i<partnerSorted.size();i++){
             int newCountVip = partnerPort.countVip();
             if(newCountVip>= 5){

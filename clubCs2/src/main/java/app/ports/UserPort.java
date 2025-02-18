@@ -5,11 +5,17 @@
 
 package app.ports;
 
+import app.domain.models.Partner;
+import app.domain.models.User;
+
 /**
  *
  * @author ESTUDIANTE
  */
-public interface PartnerPort {
-    private void savePartner(Partner partner);
+public interface UserPort {
+    public boolean existUserName(String userName);
 
+    public void saveUser(Partner partner);
+
+    public User findByPersonId(long personId);
 }
