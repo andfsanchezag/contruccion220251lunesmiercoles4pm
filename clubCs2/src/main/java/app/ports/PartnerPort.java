@@ -6,6 +6,8 @@
 package app.ports;
 
 import app.domain.models.Partner;
+import app.domain.models.User;
+
 import java.util.List;
 
 /**
@@ -19,10 +21,12 @@ public interface PartnerPort {
 
     public int countVip();
 
-    public List<Partner> getByStatusPending();
+    public List<Partner> getByTypePending();
 
-    public void updateStatusToRegular();
+	public Partner findByUserId(User user);
 
-    public void updateStatus(Partner get);
+	void updateTypeToRegular();
+
+	void updateType(Partner partner);
 
 }

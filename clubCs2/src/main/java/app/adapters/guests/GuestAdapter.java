@@ -1,5 +1,7 @@
 package app.adapters.guests;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +77,7 @@ public class GuestAdapter implements GuestPort {
 		partnerEntity.setAmount(partner.getAmount());
 		partnerEntity.setType(partner.getType());
 		partnerEntity.setDateCreated(partner.getDateCreated());
+		partnerEntity.setPartnerId(partner.getPartnerId());
 		return partnerEntity;
 	}
 	
@@ -110,6 +113,18 @@ public class GuestAdapter implements GuestPort {
 		partner.setDateCreated(partnerEntity.getDateCreated());
 		return partner;
 	}
+
+
+	@Override
+	public List<Guest> findByPartnerIdAndStatusActive(Partner partner) {
+	    PartnerEntity partnerEntity = partnerAdapter(partner);
+	    List<GuestEntity> guestEntities = guestRepository.findByPartnerIdAndStatusTrue(partnerEntity);
+	    
+	    return guestEntities.stream()
+	            .map(this::guestAdapter)
+	            .toList();
+	}
+
 
 
 }

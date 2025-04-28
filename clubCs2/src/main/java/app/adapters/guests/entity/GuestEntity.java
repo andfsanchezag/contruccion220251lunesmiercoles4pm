@@ -15,12 +15,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@Entity
 @Table(name="guest")
 public class GuestEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name= "guest_id")
+	@Column(name= "id")
 	private long guestId;
 	@JoinColumn(name="user_id")
 	@OneToOne
